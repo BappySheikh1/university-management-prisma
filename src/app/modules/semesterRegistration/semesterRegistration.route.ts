@@ -10,6 +10,10 @@ const router = express.Router();
 router.get('/', SemesterRegistrationController.getAllFromDB);
 router.get('/:id', SemesterRegistrationController.getByIdFromDB);
 
+router.post("/semester-registration",
+auth(ENUM_USER_ROLE.STUDENT),
+SemesterRegistrationController.startRegistration)
+
 router.post(
     '/',
     validateRequest(SemesterRegistrationValidation.create),
