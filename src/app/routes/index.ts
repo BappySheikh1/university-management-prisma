@@ -59,6 +59,10 @@ const moduleRoutes = [
     path: '/offered-course-sections',
     route: OfferedCourseSectionRouter ,
   },
+  {
+    path: '/offered-course-class-schedule',
+    route: OfferedCourseSectionRouter ,
+  },
   
 ];
 
