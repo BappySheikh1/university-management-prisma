@@ -10,34 +10,43 @@ const router = express.Router();
 router.get('/', SemesterRegistrationController.getAllFromDB);
 router.get('/:id', SemesterRegistrationController.getByIdFromDB);
 
-router.post("/semester-registration",
-auth(ENUM_USER_ROLE.STUDENT),
-SemesterRegistrationController.startRegistration)
+router.post(
+  '/semester-registration',
+  auth(ENUM_USER_ROLE.STUDENT),
+  SemesterRegistrationController.startRegistration
+);
 
 router.post(
-    '/',
-    validateRequest(SemesterRegistrationValidation.create),
-    auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
-    SemesterRegistrationController.insertIntoDB
+  '/',
+  validateRequest(SemesterRegistrationValidation.create),
+  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  SemesterRegistrationController.insertIntoDB
 );
 
 router.patch(
-    '/:id',
-    validateRequest(SemesterRegistrationValidation.update),
-    auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
-    SemesterRegistrationController.updateOneInDB
+  '/:id',
+  validateRequest(SemesterRegistrationValidation.update),
+  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  SemesterRegistrationController.updateOneInDB
 );
 
 router.delete(
-    '/:id',
-    auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
-    SemesterRegistrationController.deleteByIdFromDB
+  '/:id',
+  auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  SemesterRegistrationController.deleteByIdFromDB
 );
 
 router.post(
-    "/enroll-into-course",
-    auth(ENUM_USER_ROLE.STUDENT),
-    SemesterRegistrationController.enrollIntoCourse
-    )
+  '/enroll-into-course',
+  validateRequest(SemesterRegistrationValidation.enrollIOrWithdrawCourse),
+  auth(ENUM_USER_ROLE.STUDENT),
+  SemesterRegistrationController.enrollIntoCourse
+);
+router.post(
+  '/withdraw-from-course',
+  validateRequest(SemesterRegistrationValidation.enrollIOrWithdrawCourse),
+  auth(ENUM_USER_ROLE.STUDENT),
+  SemesterRegistrationController.withdrawFromCourse
+);
 
 export const SemesterRegistrationRoutes = router;
