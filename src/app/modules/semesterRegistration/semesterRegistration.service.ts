@@ -293,7 +293,9 @@ const withdrawFromCourse = async (
   );
 };
 
-const confirmMyRegistration = async (authUserId: string): Promise<{
+const confirmMyRegistration = async (
+  authUserId: string
+): Promise<{
   message: string;
 }> => {
   const semesterRegistration = await prisma.semesterRegistration.findFirst({
@@ -358,8 +360,39 @@ const confirmMyRegistration = async (authUserId: string): Promise<{
   });
 
   return {
-    message:"Your registration is confirmed!"
-  }
+    message: 'Your registration is confirmed!',
+  };
+};
+
+const getMyRegistration = async (authUserId: string) => {
+  const semesterRegistration = await prisma.semesterRegistration.findFirst({
+    where: {
+      status: SemesterRegistrationStatus.ONGOING,
+    },
+    include: {
+      academicSemester: true,
+    },
+  });
+
+  const studentSemesterRegistration =
+    await prisma.studentSemesterRegistration.findFirst({
+      where: {
+        semesterRegistration: {
+          id: semesterRegistration?.id,
+        },
+        student: {
+          studentId: authUserId,
+        },
+      },
+      include: {
+        student: true,
+      },
+    });
+
+  return {
+    semesterRegistration,
+    studentSemesterRegistration,
+  };
 };
 
 export const SemesterRegistrationService = {
@@ -372,4 +405,5 @@ export const SemesterRegistrationService = {
   enrollIntoCourse,
   withdrawFromCourse,
   confirmMyRegistration,
+  getMyRegistration,
 };
