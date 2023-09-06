@@ -301,6 +301,8 @@ model StudentEnrolledCourse {
   totalMarks                 Int?                        @default(0)
   status                     StudentEnrolledCourseStatus @default(ONGOING)
   studentEnrolledCourseMarks StudentEnrolledCourseMark[]
+
+  @@map("student_enrolled_course")
 }
 
 model StudentEnrolledCourseMark {
@@ -331,6 +333,7 @@ model StudentSemesterPayment {
 
   fullPaymentAmount    Int?           @default(0)
   partialPaymentAmount Int?           @default(0)
+  totalDueAmount       Int?           @default(0)
   totalPaidAmount      Int?           @default(0)
   paymentStatus        PaymentStatus? @default(PENDING)
 
