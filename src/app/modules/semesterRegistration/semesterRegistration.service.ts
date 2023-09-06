@@ -20,6 +20,7 @@ import {
   ISemesterRegistrationFilterRequest,
 } from './semesterRegistration.interface';
 import { StudentSemesterRegistrationCourseService } from '../StudentSemesterRegistrationCourse/StudentSemesterRegistrationCourse.service';
+import { asyncForEach } from '../../../shared/utils';
 
 const insertIntoDB = async (
   data: SemesterRegistration
@@ -424,7 +425,7 @@ const startNewSemester = async (id: string) => {
   }
 
   await prisma.$transaction(async prismaTransactionClient => {
-   await prismaTransactionClient.academicSemester.updateMany({
+    await prismaTransactionClient.academicSemester.updateMany({
       where: {
         isCurrent: true,
       },
@@ -441,12 +442,46 @@ const startNewSemester = async (id: string) => {
         isCurrent: true,
       },
     });
+
+    const studentSemesterRegistrations =
+      await prisma.studentSemesterRegistration.findMany({
+        where: {
+          semesterRegistration: {
+            id,
+          },
+          isConfirmed: true,
+        },
+      });
+
+    asyncForEach(
+      studentSemesterRegistrations,
+      async (studentSemReg: StudentSemesterRegistration) => {
+        // console.log(studentSemReg);
+        const studentSemesterRegistrationCourses =
+          await prisma.studentSemesterRegistrationCourse.findMany({
+            where: {
+              semesterRegistration: {
+                id,
+              },
+              student: {
+                id: studentSemReg.studentId,
+              },
+            },
+            include: {
+              offeredCourse: {
+                include: {
+                  course: true,
+                },
+              },
+            },
+          });
+        console.log(studentSemesterRegistrationCourses);
+      }
+    );
   });
 
- 
-
   return {
-    message: "Semester started successfully!"
+    message: 'Semester started successfully!',
   };
 };
 
