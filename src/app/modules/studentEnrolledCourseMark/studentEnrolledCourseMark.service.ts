@@ -194,85 +194,124 @@ const updateStudentMarks = async (payload: any) => {
 
 const updateFinalMarks = async (payload: any) => {
   const { studentId, academicSemesterId, courseId } = payload;
-
   const studentEnrolledCourse = await prisma.studentEnrolledCourse.findFirst({
-    where: {
-      student: {
-        id: studentId,
-      },
-      academicSemester: {
-        id: academicSemesterId,
-      },
-      course: {
-        id: courseId,
-      },
-    },
+      where: {
+          student: {
+              id: studentId
+          },
+          academicSemester: {
+              id: academicSemesterId
+          },
+          course: {
+              id: courseId
+          }
+      }
   });
 
   if (!studentEnrolledCourse) {
-    throw new ApiError(
-      httpStatus.NOT_FOUND,
-      'Student enrolled course data not found'
-    );
+      throw new ApiError(httpStatus.BAD_REQUEST, "Student enrolled course data not found!")
   }
 
-  const studentEnrolledCourseMarks =
-    await prisma.studentEnrolledCourseMark.findMany({
+  //console.log(studentEnrolledCourse)
+  const studentEnrolledCourseMarks = await prisma.studentEnrolledCourseMark.findMany({
       where: {
-        student: {
-          id: studentId,
-        },
-        academicSemester: {
-          id: academicSemesterId,
-        },
-        studentEnrolledCourse: {
-          course: {
-            id: courseId,
+          student: {
+              id: studentId
           },
-        },
-      },
-    });
+          academicSemester: {
+              id: academicSemesterId
+          },
+          studentEnrolledCourse: {
+              course: {
+                  id: courseId
+              }
+          }
+      }
+  });
 
+  //console.log(studentEnrolledCourseMarks)
   if (!studentEnrolledCourseMarks.length) {
-    throw new ApiError(
-      httpStatus.NOT_FOUND,
-      'Student enrolled course mark not found'
-    );
+      throw new ApiError(httpStatus.BAD_REQUEST, "student enrolled course mark not found!")
   }
 
-  const midtermMarks =
-    studentEnrolledCourseMarks.find(item => item.examType === ExamType.MIDTREM)
-      ?.marks || 0;
-  const finalMarks =
-    studentEnrolledCourseMarks.find(item => item.examType === ExamType.FINAL)
-      ?.marks || 0;
+  const midTermMarks = studentEnrolledCourseMarks.find((item) => item.examType === ExamType.MIDTERM)?.marks || 0;
+  const finalTermMarks = studentEnrolledCourseMarks.find((item) => item.examType === ExamType.FINAL)?.marks || 0;
+  //console.log(midTermMarks, finalTermMarks)
 
-  const totalFinalMarks =
-    Math.ceil(midtermMarks * 0.4) + Math.ceil(finalMarks * 0.6);
+  const totalFinalMarks = Math.ceil(midTermMarks * 0.4) + Math.ceil(finalTermMarks * 0.6);
+  const result = StudentEnrolledCourseMarkUtils.getGradeFromMarks(totalFinalMarks)
 
-  const result =
-    StudentEnrolledCourseMarkUtils.getGradeFromMarks(totalFinalMarks);
 
   await prisma.studentEnrolledCourse.updateMany({
-    where: {
-      student: {
-        id: studentId,
+      where: {
+          student: {
+              id: studentId
+          },
+          academicSemester: {
+              id: academicSemesterId
+          },
+          course: {
+              id: courseId
+          }
       },
-      academicSemester: {
-        id: academicSemesterId,
-      },
-      course: {
-        id: courseId,
-      },
-    },
-    data: {
-      grade: result.grade,
-      point: result.point,
-      totalMarks: totalFinalMarks,
-      status: StudentEnrolledCourseStatus.COMPLETED,
-    },
+      data: {
+          grade: result.grade,
+          point: result.point,
+          totalMarks: totalFinalMarks,
+          status: StudentEnrolledCourseStatus.COMPLETED
+      }
   });
+
+  const grades = await prisma.studentEnrolledCourse.findMany({
+      where: {
+          student: {
+              id: studentId
+          },
+          status: StudentEnrolledCourseStatus.COMPLETED
+      },
+      include: {
+          course: true
+      }
+  });
+
+  const academicResult = await StudentEnrolledCourseMarkUtils.calcCGPAandGrade(grades);
+
+  const studentAcademicInfo = await prisma.studentAcademicInfo.findFirst({
+      where: {
+          student: {
+              id: studentId
+          }
+      }
+  })
+
+  if (studentAcademicInfo) {
+      await prisma.studentAcademicInfo.update({
+          where: {
+              id: studentAcademicInfo.id
+          },
+          data: {
+              totalCompletedCredit: academicResult.totalCompletedCredit,
+              cgpa: academicResult.cgpa
+          }
+      })
+  }
+  else {
+      await prisma.studentAcademicInfo.create({
+          data: {
+              student: {
+                  connect: {
+                      id: studentId
+                  }
+              },
+              totalCompletedCredit: academicResult.totalCompletedCredit,
+              cgpa: academicResult.cgpa
+          }
+      })
+  }
+
+  return grades;
 };
+
 
 export const StudentEnrolledCourseMarkService = {
   createStudentEnrolledCourseDefaultMark,
