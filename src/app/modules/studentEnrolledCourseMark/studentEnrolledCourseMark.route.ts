@@ -12,7 +12,7 @@ router.get(
 );
 
 router.patch(
-  'update-marks',
+  '/update-marks',
   StudentEnrolledCourseMarkController.updateStudentMarks
 );
 

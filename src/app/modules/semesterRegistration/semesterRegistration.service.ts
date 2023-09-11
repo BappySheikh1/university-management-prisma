@@ -24,7 +24,7 @@ import {
 } from './semesterRegistration.interface';
 import { StudentSemesterRegistrationCourseService } from '../StudentSemesterRegistrationCourse/StudentSemesterRegistrationCourse.service';
 import { asyncForEach } from '../../../shared/utils';
-import { StudentSemesterPayment } from '../studentSemesterPayment/studentSemesterPayment.service';
+import { StudentSemesterPaymentService } from '../studentSemesterPayment/studentSemesterPayment.service';
 import { StudentEnrolledCourseMarkService } from '../studentEnrolledCourseMark/studentEnrolledCourseMark.service';
 
 const insertIntoDB = async (
@@ -469,7 +469,7 @@ const startNewSemester = async (
 
         if (studentSemReg.totalCreditsTaken) {
           const totalPaymentAmount = studentSemReg.totalCreditsTaken * 5000;
-          await StudentSemesterPayment.createSemesterPayment(
+          await StudentSemesterPaymentService.createSemesterPayment(
             prismaTransactionClient,
             {
               studentId: studentSemReg.studentId,
