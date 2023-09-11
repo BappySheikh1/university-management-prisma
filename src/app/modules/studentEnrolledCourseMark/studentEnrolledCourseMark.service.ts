@@ -234,7 +234,7 @@ const updateFinalMarks = async (payload: any) => {
       throw new ApiError(httpStatus.BAD_REQUEST, "student enrolled course mark not found!")
   }
 
-  const midTermMarks = studentEnrolledCourseMarks.find((item) => item.examType === ExamType.MIDTERM)?.marks || 0;
+  const midTermMarks = studentEnrolledCourseMarks.find((item) => item.examType === ExamType.MIDTREM)?.marks || 0;
   const finalTermMarks = studentEnrolledCourseMarks.find((item) => item.examType === ExamType.FINAL)?.marks || 0;
   //console.log(midTermMarks, finalTermMarks)
 
