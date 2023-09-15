@@ -239,7 +239,7 @@ const myCourses = async (
       }
   });
 
-  const couseAndSchedule = offeredCourseSections.reduce((acc: any, obj: any) => {
+  const courseAndSchedule = offeredCourseSections.reduce((acc: any, obj: any) => {
       //console.log(obj)
 
       const course = obj.offeredCourse.course;
@@ -265,7 +265,7 @@ const myCourses = async (
       }
       return acc;
   }, []);
-  return couseAndSchedule;
+  return courseAndSchedule;
 };
 
 export const FacultyService = {

@@ -7,11 +7,20 @@ import auth from '../../middlewares/auth';
 
 const router = express.Router();
 
-router.get('/get-my-registration',
-auth(ENUM_USER_ROLE.STUDENT),
-SemesterRegistrationController.getMyRegistration);
+router.get(
+  '/get-my-registration',
+  auth(ENUM_USER_ROLE.STUDENT),
+  SemesterRegistrationController.getMyRegistration
+);
 
 router.get('/', SemesterRegistrationController.getAllFromDB);
+
+router.get(
+  '/get-my-semester-courses',
+  auth(ENUM_USER_ROLE.STUDENT),
+  SemesterRegistrationController.getMySemesterRegistrationCourses
+);
+
 router.get('/:id', SemesterRegistrationController.getByIdFromDB);
 
 router.post(
@@ -46,8 +55,6 @@ router.post(
   auth(ENUM_USER_ROLE.STUDENT),
   SemesterRegistrationController.enrollIntoCourse
 );
-
-
 
 router.post(
   '/withdraw-from-course',
