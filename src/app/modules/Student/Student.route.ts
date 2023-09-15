@@ -8,6 +8,7 @@ import { StudentValidation } from './Student.validation';
 const router = express.Router();
 
 router.get('/', StudentController.getAllFromDB);
+router.get('/my-course-schedules', StudentController.getMyCourseSchedules);
 router.get(
   '/my-courses',
   auth(ENUM_USER_ROLE.STUDENT),
