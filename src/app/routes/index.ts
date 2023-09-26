@@ -41,7 +41,7 @@ const moduleRoutes = [
     route: BuildingRoutes,
   },
   {
-    path: '/room',
+    path: '/rooms',
     route: RoomRoutes,
   },
   {
@@ -49,7 +49,7 @@ const moduleRoutes = [
     route: CourseRoutes,
   },
   {
-    path: '/semester-registration',
+    path: '/semester-registrations',
     route: SemesterRegistrationRoutes,
   },
   {

@@ -4,7 +4,7 @@ import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
 import { academicFacultySearchableFields } from './AcademicFaculty.constants';
-import { IAcademicFacultyFilterRequest } from './AcademicFaculty.interface';
+import { EVENT_ACADEMIC_FACULTY_CREATED, EVENT_ACADEMIC_FACULTY_DELETED, EVENT_ACADEMIC_FACULTY_UPDATED, IAcademicFacultyFilterRequest } from './AcademicFaculty.interface';
 import { RedisClient } from '../../../shared/redis';
 
 const insertIntoDB = async (
@@ -15,7 +15,7 @@ const insertIntoDB = async (
   });
 
   if (result) {
-    RedisClient.publish('academic-faculty.crated', JSON.stringify(result));
+    RedisClient.publish(EVENT_ACADEMIC_FACULTY_CREATED, JSON.stringify(result));
   }
   return result;
 };
@@ -99,7 +99,7 @@ const updateOneInDB = async (
   });
 
   if (result) {
-    RedisClient.publish('academic-faculty.updated', JSON.stringify(result));
+    RedisClient.publish(EVENT_ACADEMIC_FACULTY_UPDATED, JSON.stringify(result));
   }
 
   return result;
@@ -113,7 +113,7 @@ const deleteByIdFromDB = async (id: string): Promise<AcademicFaculty> => {
   });
 
   if (result) {
-    RedisClient.publish('academic-faculty.deleted', JSON.stringify(result));
+    RedisClient.publish(EVENT_ACADEMIC_FACULTY_DELETED, JSON.stringify(result));
   }
 
   return result;
