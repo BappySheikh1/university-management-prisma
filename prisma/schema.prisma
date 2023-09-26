@@ -57,7 +57,7 @@ model AcademicDepartment {
 }
 
 model Student {
-  id           String @id @default(uuid())
+  id           String  @id @default(uuid())
   studentId    String
   firstName    String
   lastName     String
@@ -90,7 +90,7 @@ model Student {
 }
 
 model Faculty {
-  id           String @id @default(uuid())
+  id           String   @id @default(uuid())
   facultyId    String
   firstName    String
   lastName     String
@@ -100,9 +100,10 @@ model Faculty {
   contactNo    String
   gender       String
   bloodGroup   String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  designation  String
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   academicDepartment   AcademicDepartment @relation(fields: [academicDepartmentId], references: [id])
   academicDepartmentId String
